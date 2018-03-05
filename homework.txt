@@ -1,0 +1,75 @@
+Eshop
+
+User
+id : int
+email : string
+firstName: string
+lastName: string
+balance: double
+
+Product
+id: int
+dispayName: string
+description: string
+category: int
+price: double
+discount: int (percents)
+seller: -> reference "user"
+quantity: int
+
+Categories
+id: int
+name: string
+
+Purchase  
+id: int
+soldBy: -> reference "user"
+boughtBy: -> reference "user"
+sellDate: date
+endPrice: double 
+price_without_discount: double 
+product_id -> reference "product"
+quantity: int
+
+1. Create entities in the system with repositories
+2. Create UserService, PurchaseService and ProductService
+3. Create UserCotnroller for user creation
+4. Create ProductController for adding new products
+5. Create PurchaseController for purchasing the products
+
+Flow
+1. Create user A
+2. Add products for user A. Products must have price and quantity
+2.1. Product also has a category. It is necessary to check, whether such category exists. 
+If exists - add a reference to table Category. If not - create one and add a reference to table Category. 
+
+3. Create user B with balance of 1000.00
+4. User B makes a purchase (pass in to controller user id, product id and quantity)
+/*** figure out which controller fits the logic, described below ***/
+
+4.1. ENOUGHT MONEY, ENOUGH PRODUCTS
+4.1.1. In PurchaseService - find the product.
+4.1.2. Make sure the quantity less or equals the requested (user cannot buy 11 products if there are only 10)
+4.1.3. Make sure the total price of all products is less or euqals the balance of the requesting user
+4.1.4. Create and record the Purchase within a @Transactional method
+4.1.5. Deduct the total purcahse amount from the requesting user and add it the the product owner
+4.1.6. Decrease the product quantity from Product. 
+4.1.7. Save all objects
+
+4.2. ENOUGH MONEY, NOT ENOUGH PRODUCTS
+4.2.1. Create an exception NotEnoughProducts.
+4.2.2. This exception must be thrown when 4.1.2 check fails. Everything should be rolled back
+
+4.3. NOT ENOUGH MONEY. 
+4.3.1. Create an exception InsufficiendFundsException
+4.3.2. The exception should be thrown when 4.1.3 check fails. Everything should be rolled back
+
+
+5. Create a search controller and search service
+5.1. Controller should have functionality to: 
+search all products
+search products by id
+search products by name
+search products by seller id
+search products by price: price between two paramters passed in
+search products by a category
